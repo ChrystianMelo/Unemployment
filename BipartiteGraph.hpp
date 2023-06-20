@@ -70,27 +70,72 @@ public:
 		std::unordered_set<T> visited;
 
 		for (int i = 0; i < m_verticesSize; i++) {
-			if (matching[i].empty()) {
-				for (T v : m_adjacency[i]) {
-					if (visited.find(v) == visited.end()) {
-						visited.insert(v);
-						matching[i] = v;
-						break;
-					}
+			for (T v : m_adjacency[i]) {
+				if (visited.find(v) == visited.end()) {
+					visited.insert(v);
+					matching[i] = v;
+					break;
 				}
 			}
 		}
 
 		std::vector<std::pair<int, T>> pairs;
 		for (int i = 0; i < m_verticesSize; i++) {
-			if (!matching[i].empty()) {
-				pairs.push_back({ i, matching[i] });
-			}
+			pairs.push_back({ i, matching[i] });
 		}
 
 		return pairs;
 	}
 
+	/**
+	 * @brief Algoritmo de matching usando programação dinâmica para encontrar a melhor solução possível no grafo bipartido.
+	 **/
+	std::vector<std::pair<T, T>> dpMatching() {
+		std::vector<bool> visited(m_verticesSize, false);
+		std::vector<std::pair<T, T>> matches(m_verticesSize);
+		std::vector<int> parent(m_verticesSize, -1);
+
+		for (int i = 0; i < m_verticesSize; i++) {
+			if (!visited[i]) {
+				std::fill(parent.begin(), parent.end(), -1);
+				bool found = false;
+
+				// Executa uma DFS a partir do vértice atual
+				found = dfs(i, parent, visited);
+
+				if (found) {
+					for (int j = 0; j < m_verticesSize; j++) {
+						if (parent[j] != -1) {
+							matches[j] = (std::make_pair(m_vertices[parent[j]], m_vertices[j]));
+							matching[j] = m_vertices[parent[j]];
+						}
+					}
+				}
+			}
+		}
+
+		return matches;
+	}
+
+	/**
+	 * @brief
+	 **/
+	bool dfs(int start, std::vector<int>& parent, std::vector<bool>& visited) {
+		visited[start] = true;
+
+		for (int i = 0; i < m_verticesSize; i++) {
+			for (T v : m_adjacency[i]) {
+				if (!visited[i]) {
+					if (matching[i] == T() || dfs(i, parent, visited)) {
+						parent[i] = start;
+						return true;
+					}
+				}
+			}
+
+		}
+		return false;
+	}
 private:
 	/**
 	* @brief Retorna o �ndice do v�rtice no grafo.

@@ -11,21 +11,13 @@
 
 #include "BipartiteGraph.hpp"
 
-#define INF 0x3f3f3f3f
- /**
-  * @brief Verifca se o numero � impar.
-  **/
-bool isOdd(int number)
-{
-	return number % 2 != 0;
-}
 
 /**
  * @brief Classe principal do projeto.
  **/
 int main(int argc, char const* argv[])
 {
-	std::string inputFilename("C:\\Users\\Chrystian Melo\\Documents\\Alg1\\Unemployment\\test_cases\\inputs\\test_case5.txt");
+	std::string inputFilename("C:\\Users\\Chrystian Melo\\Documents\\Alg1\\Unemployment\\test_cases\\inputs\\test_case0.txt");
 
 	std::ifstream myfileInput(inputFilename);
 	assert(myfileInput);
@@ -45,7 +37,7 @@ int main(int argc, char const* argv[])
 	}
 
 	std::cout << "Guloso: " << graph.greedyMatching().size() << std::endl;
-	std::cout << "Exato: " << graph.greedyMatching().size() << std::endl;
+	std::cout << "Exato: " << graph.dpMatching().size() << std::endl;
 
 	return 0;
 }
