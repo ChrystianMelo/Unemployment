@@ -11,19 +11,13 @@
 
 #include "BipartiteGraph.hpp"
 
-
 /**
  * @brief Classe principal do projeto.
  **/
 int main(int argc, char const* argv[])
 {
-	std::string inputFilename("C:\\Users\\Chrystian Melo\\Documents\\Alg1\\Unemployment\\test_cases\\inputs\\test_case0.txt");
-
-	std::ifstream myfileInput(inputFilename);
-	assert(myfileInput);
-
 	int usersSize, jobsSize, connectionsSize;
-	myfileInput >> usersSize >> jobsSize >> connectionsSize;
+	std::cin >> usersSize >> jobsSize >> connectionsSize;
 
 	BipartiteGraph<std::string> graph(usersSize);
 
@@ -31,13 +25,13 @@ int main(int argc, char const* argv[])
 	for (int i = 0; i < connectionsSize; i++)
 	{
 		std::string from, to;
-		myfileInput >> from >> to;
+		std::cin >> from >> to;
 
 		graph.addEdge(from, to);
 	}
 
 	std::cout << "Guloso: " << graph.greedyMatching().size() << std::endl;
-	std::cout << "Exato: " << graph.dpMatching().size() << std::endl;
+	std::cout << "Exato: " << graph.dpMatching() << std::endl;
 
 	return 0;
 }

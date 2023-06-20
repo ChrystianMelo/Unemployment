@@ -8,6 +8,7 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <utility>
 #include <functional>
@@ -24,6 +25,11 @@ private:
 	 * @brief Vertices do grafo.
 	 */
 	std::vector<T> m_vertices;
+
+	/**
+	 * @brief Vertices do grafo.
+	 */
+	std::vector<T> m_vertices2;
 
 	/**
 	 * @brief .
@@ -54,6 +60,7 @@ public:
 	void addEdge(T v1, T v2) {
 		// Adiciona o vertice, se necessário.
 		addVertex(v1);
+		addVertex2(v2);
 
 		// Recupera o indice dos verices
 		int i1 = getIndex(v1);
@@ -70,18 +77,22 @@ public:
 		std::unordered_set<T> visited;
 
 		for (int i = 0; i < m_verticesSize; i++) {
-			for (T v : m_adjacency[i]) {
-				if (visited.find(v) == visited.end()) {
-					visited.insert(v);
-					matching[i] = v;
-					break;
+			if (matching[i].empty()) {
+				for (T v : m_adjacency[i]) {
+					if (visited.find(v) == visited.end()) {
+						visited.insert(v);
+						matching[i] = v;
+						break;
+					}
 				}
 			}
 		}
 
 		std::vector<std::pair<int, T>> pairs;
 		for (int i = 0; i < m_verticesSize; i++) {
-			pairs.push_back({ i, matching[i] });
+			if (!matching[i].empty()) {
+				pairs.push_back({ i, matching[i] });
+			}
 		}
 
 		return pairs;
@@ -90,8 +101,7 @@ public:
 	/**
 	 * @brief Algoritmo de matching usando programação dinâmica para encontrar a melhor solução possível no grafo bipartido.
 	 **/
-	std::vector<std::pair<T, T>> dpMatching() {
-		int maxMatching() {
+	int dpMatching() {
 		int m = m_vertices.size();
 		int n = m_vertices2.size();
 
@@ -102,7 +112,6 @@ public:
 				if (m_adjacency[i - 1].size() > 0) {
 					// Verificar todas as opções de casamento para o vértice i da parte a
 					for (T v : m_adjacency[i - 1]) {
-						int k = getIndex(v);
 						// Escolher a opção com o maior número de arestas
 						dp[i][j] = std::max(dp[i][j], dp[i - 1][j - 1] + 1);
 					}
@@ -123,9 +132,16 @@ private:
 	**/
 	int getIndex(T vertex)
 	{
-		for (std::size_t i = 0; i < m_verticesSize; i++)
+		for (std::size_t i = 0; i < m_vertices.size(); i++)
 		{
 			if (m_vertices[i] == vertex)
+			{
+				return i;
+			}
+		}
+		for (std::size_t i = 0; i < m_vertices2.size(); i++)
+		{
+			if (m_vertices2[i] == vertex)
 			{
 				return i;
 			}
@@ -142,5 +158,13 @@ private:
 			m_vertices.push_back(v);
 	}
 
+	/**
+	 * @brief
+	 **/
+	void addVertex2(T v) {
+		// Adiciona o vertice
+		if (std::find(m_vertices2.begin(), m_vertices2.end(), v) == m_vertices2.end())
+			m_vertices2.push_back(v);
+	}
 };
 #endif
