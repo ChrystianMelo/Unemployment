@@ -91,50 +91,28 @@ public:
 	 * @brief Algoritmo de matching usando programação dinâmica para encontrar a melhor solução possível no grafo bipartido.
 	 **/
 	std::vector<std::pair<T, T>> dpMatching() {
-		std::vector<bool> visited(m_verticesSize, false);
-		std::vector<std::pair<T, T>> matches(m_verticesSize);
-		std::vector<int> parent(m_verticesSize, -1);
+		int maxMatching() {
+		int m = m_vertices.size();
+		int n = m_vertices2.size();
 
-		for (int i = 0; i < m_verticesSize; i++) {
-			if (!visited[i]) {
-				std::fill(parent.begin(), parent.end(), -1);
-				bool found = false;
+		std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1, 0));
 
-				// Executa uma DFS a partir do vértice atual
-				found = dfs(i, parent, visited);
-
-				if (found) {
-					for (int j = 0; j < m_verticesSize; j++) {
-						if (parent[j] != -1) {
-							matches[j] = (std::make_pair(m_vertices[parent[j]], m_vertices[j]));
-							matching[j] = m_vertices[parent[j]];
-						}
+		for (int i = 1; i <= m; i++) {
+			for (int j = 1; j <= n; j++) {
+				if (m_adjacency[i - 1].size() > 0) {
+					// Verificar todas as opções de casamento para o vértice i da parte a
+					for (T v : m_adjacency[i - 1]) {
+						int k = getIndex(v);
+						// Escolher a opção com o maior número de arestas
+						dp[i][j] = std::max(dp[i][j], dp[i - 1][j - 1] + 1);
 					}
 				}
+				// Caso não haja casamento para o vértice i da parte a
+				dp[i][j] = std::max(dp[i][j], dp[i - 1][j]);
 			}
 		}
 
-		return matches;
-	}
-
-	/**
-	 * @brief
-	 **/
-	bool dfs(int start, std::vector<int>& parent, std::vector<bool>& visited) {
-		visited[start] = true;
-
-		for (int i = 0; i < m_verticesSize; i++) {
-			for (T v : m_adjacency[i]) {
-				if (!visited[i]) {
-					if (matching[i] == T() || dfs(i, parent, visited)) {
-						parent[i] = start;
-						return true;
-					}
-				}
-			}
-
-		}
-		return false;
+		return dp[m][n];
 	}
 private:
 	/**
