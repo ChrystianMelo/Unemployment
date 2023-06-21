@@ -21,7 +21,6 @@ int main(int argc, char const* argv[])
 
 	BipartiteGraph<std::string> graph(usersSize);
 
-	// Adiciona os vertices e arestas.
 	for (int i = 0; i < connectionsSize; i++)
 	{
 		std::string from, to;
@@ -30,8 +29,8 @@ int main(int argc, char const* argv[])
 		graph.addEdge(from, to);
 	}
 
-	std::cout << "Guloso: " << graph.greedyMatching().size() << std::endl;
-	std::cout << "Exato: " << graph.dpMatching() << std::endl;
+	std::cout << "Guloso: " << graph.greedyAlgorithm() << std::endl;
+	std::cout << "Exato: " << graph.exactAlgorithm() << std::endl;
 
 	return 0;
 }

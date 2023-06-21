@@ -1,8 +1,7 @@
 /**
  * @file BipartiteGraph.hpp
- * @author Chrystian Melo(meloo.chrys@gmail.com)
  * @brief Classe representando um grafo bipartido.
- *
+ * @author Chrystian Melo (meloo.chrys@gmail.com)
  */
 
 #ifndef GRAPH_HPP
@@ -22,66 +21,68 @@ template <typename T>
 class BipartiteGraph {
 private:
 	/**
-	 * @brief Vertices do grafo.
+	 * @brief Vertices da primeira parte do grafo.
 	 */
 	std::vector<T> m_vertices;
 
 	/**
-	 * @brief Vertices do grafo.
+	 * @brief Vertices da segunda parte do grafo.
 	 */
 	std::vector<T> m_vertices2;
 
 	/**
-	 * @brief .
+	 * @brief Tamanho dos vértices.
 	 */
 	int m_verticesSize;
 
 	/**
-	 * @brief
+	 * @brief Matriz de adjacência.
 	 **/
 	std::vector<std::vector<T>> m_adjacency;
 
 	/**
-	 * @brief
+	 * @brief Vetor de emparelhamento.
 	 **/
-	std::vector<T> matching;
+	std::vector<T> m_matching;
 
 public:
 	/**
-	 * @brief
+	 * @brief Construtor da classe BipartiteGraph.
+	 * 
+	 * @param n O tamanho do grafo.
 	 **/
 	BipartiteGraph(int n) : m_verticesSize(n) {
 		m_adjacency.resize(m_verticesSize);
 	}
 
 	/**
-	 * @brief
+	 * @brief Adiciona uma aresta ao grafo bipartido.
+	 * 
+	 * @param v1 O primeiro vértice da aresta.
+	 * @param v2 O segundo vértice da aresta.
 	 **/
 	void addEdge(T v1, T v2) {
-		// Adiciona o vertice, se necessário.
 		addVertex(v1);
 		addVertex2(v2);
 
-		// Recupera o indice dos verices
-		int i1 = getIndex(v1);
-
-		// Adiciona a aresta
-		m_adjacency[i1].push_back(v2);
+		m_adjacency[getIndex(v1)].push_back(v2);
 	}
 
 	/**
-	 * @brief
+	 * @brief Realiza o emparelhamento guloso no grafo bipartido.
+	 * 
+	 * @return Quantidade de pares emparelhados.
 	 **/
-	std::vector<std::pair<int, T>> greedyMatching() {
-		matching.assign(m_verticesSize, T());
+	int greedyAlgorithm() {
+		m_matching.assign(m_verticesSize, T());
 		std::unordered_set<T> visited;
 
 		for (int i = 0; i < m_verticesSize; i++) {
-			if (matching[i].empty()) {
+			if (m_matching[i].empty()) {
 				for (T v : m_adjacency[i]) {
 					if (visited.find(v) == visited.end()) {
 						visited.insert(v);
-						matching[i] = v;
+						m_matching[i] = v;
 						break;
 					}
 				}
@@ -90,18 +91,20 @@ public:
 
 		std::vector<std::pair<int, T>> pairs;
 		for (int i = 0; i < m_verticesSize; i++) {
-			if (!matching[i].empty()) {
-				pairs.push_back({ i, matching[i] });
+			if (!m_matching[i].empty()) {
+				pairs.push_back({ i, m_matching[i] });
 			}
 		}
 
-		return pairs;
+		return pairs.size();
 	}
 
 	/**
-	 * @brief Algoritmo de matching usando programação dinâmica para encontrar a melhor solução possível no grafo bipartido.
+	 * @brief Algoritmo usando programação dinâmica para encontrar a melhor solução possível no grafo bipartido.
+	 * 
+	 * @return O número máximo de emparelhamentos.
 	 **/
-	int dpMatching() {
+	int exactAlgorithm() {
 		int m = m_vertices.size();
 		int n = m_vertices2.size();
 
@@ -110,26 +113,25 @@ public:
 		for (int i = 1; i <= m; i++) {
 			for (int j = 1; j <= n; j++) {
 				if (m_adjacency[i - 1].size() > 0) {
-					// Verificar todas as opções de casamento para o vértice i da parte a
 					for (T v : m_adjacency[i - 1]) {
-						// Escolher a opção com o maior número de arestas
 						dp[i][j] = std::max(dp[i][j], dp[i - 1][j - 1] + 1);
 					}
 				}
-				// Caso não haja casamento para o vértice i da parte a
 				dp[i][j] = std::max(dp[i][j], dp[i - 1][j]);
 			}
 		}
 
 		return dp[m][n];
 	}
+
 private:
 	/**
-	* @brief Retorna o �ndice do v�rtice no grafo.
-	*
-	* @param vertex O v�rtice a ser adicionado.
-	* @return O �ndice do v�rtice no grafo. Se n�o for encontrado, retorna T().
-	**/
+	 * @brief Retorna o índice do vértice no grafo.
+	 * 
+	 * @param vertex O vértice a ser adicionado.
+	 * 
+	 * @return O índice do vértice no grafo. Se não for encontrado, retorna -1.
+	 **/
 	int getIndex(T vertex)
 	{
 		for (std::size_t i = 0; i < m_vertices.size(); i++)
@@ -150,21 +152,24 @@ private:
 	}
 
 	/**
-	 * @brief
+	 * @brief Adiciona um vértice ao grafo.
+	 * 
+	 * @param v O vértice a ser adicionado.
 	 **/
 	void addVertex(T v) {
-		// Adiciona o vertice
 		if (std::find(m_vertices.begin(), m_vertices.end(), v) == m_vertices.end())
 			m_vertices.push_back(v);
 	}
 
 	/**
-	 * @brief
+	 * @brief Adiciona um vértice à segunda parte do grafo.
+	 * 
+	 * @param v O vértice a ser adicionado.
 	 **/
 	void addVertex2(T v) {
-		// Adiciona o vertice
 		if (std::find(m_vertices2.begin(), m_vertices2.end(), v) == m_vertices2.end())
 			m_vertices2.push_back(v);
 	}
 };
+
 #endif
